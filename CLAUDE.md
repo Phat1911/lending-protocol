@@ -5,8 +5,7 @@ with code in this repository.
 
 # Lending Protocol
 
-Minimal Aave/Compound-style lending protocol. Learning project, not
-production code — see [SPEC.md](SPEC.md) for full spec.
+Minimal Aave/Compound-style lending protocol — see [SPEC.md](SPEC.md) for full spec.
 
 Built incrementally against [PLAN.md](PLAN.md), which breaks the build into
 milestones (checklist + per-milestone scope/rationale). Check it before
@@ -98,5 +97,5 @@ asset registry. Don't add one.
 - **Repay overpayment**: `repay(amount)` must cap/refuse repayment beyond
   actual outstanding debt (no overpay leaving negative debt).
 - **Oracle trust boundary**: `MockPriceOracle` is intentionally
-  unrealistic (no staleness/manipulation checks) — don't add production
-  hardening here, it's explicitly out of scope.
+  unrealistic — don't add production
+  hardening here, it's explicitly out of scope. However, we also recognize some potential risks associated with it down the line.

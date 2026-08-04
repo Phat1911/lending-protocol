@@ -1,0 +1,1 @@
+Run all test created for this milestone, after that, give me ouput testing results

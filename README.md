@@ -75,16 +75,17 @@ These are deliberate simplifications for a learning project, not oversights (SPE
 - **No flash loans.**
 - **Single-owner governance** — no DAO, no timelock, no multisig.
 - **Linear interest approximation**, not exact continuous compounding.
-- **`script/Deploy.s.sol` does not yet deploy `LendingPool`** — it currently only deploys the two mock tokens and the oracle and sets initial prices. Wiring the pool into the deploy script is still outstanding.
-- **Not deployed to any network yet** — no testnet or mainnet deployment has been made; see the deployment status check for what's still needed.
+- **Not deployed to mainnet** — Sepolia testnet only so far; no mainnet deployment has been made.
 
 ## Deployed Contract
 
-- **Network:** _TBD_
-- **LendingPool:** `[TODO: verified contract address / Etherscan link]`
-- **MockPriceOracle:** `[TODO]`
-- **mWETH:** `[TODO]`
-- **mDAI:** `[TODO]`
+- **Network:** Sepolia (chain id 11155111)
+- **LendingPool:** [`0xCAe679dBcDF79D370DFD3D4843294EF54c6E86bA`](https://sepolia.etherscan.io/address/0xCAe679dBcDF79D370DFD3D4843294EF54c6E86bA#code)
+- **MockPriceOracle:** [`0x21EaAC185835E2140De97e46Ac10613Dd4f6415A`](https://sepolia.etherscan.io/address/0x21EaAC185835E2140De97e46Ac10613Dd4f6415A#code)
+- **mWETH:** [`0x071A1C32c8e0AA04db784066CC4a8e118104E968`](https://sepolia.etherscan.io/address/0x071A1C32c8e0AA04db784066CC4a8e118104E968#code)
+- **mDAI:** [`0x4D6aF44f46e929926a569a474aA95C06056e7C1e`](https://sepolia.etherscan.io/address/0x4D6aF44f46e929926a569a474aA95C06056e7C1e#code)
+
+All 4 contracts verified on Etherscan (source-exact match). See [deployments/sepolia.json](deployments/sepolia.json) for full deployment metadata.
 
 ## Development
 

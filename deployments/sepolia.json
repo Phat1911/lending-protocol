@@ -1,0 +1,13 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deployedAt": "2026-08-04",
+  "deployer": "0xa63Ff4B48EEbb4D0BFd21903667c8A080A637696",
+  "contracts": {
+    "MockWETH": "0x071A1C32c8e0AA04db784066CC4a8e118104E968",
+    "MockDAI": "0x4D6aF44f46e929926a569a474aA95C06056e7C1e",
+    "MockPriceOracle": "0x21EaAC185835E2140De97e46Ac10613Dd4f6415A",
+    "LendingPool": "0xCAe679dBcDF79D370DFD3D4843294EF54c6E86bA"
+  },
+  "verified": true
+}
