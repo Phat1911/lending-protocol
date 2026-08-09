@@ -1,2 +1,2 @@
-Before writing code for milestone $ARGUMENTS, explain how this mechanism
-works and what the common security risks are. Don't write code yet.
+Now, let's break this down into three agents: one agent that executes milestones based on `PLAN.md` and `SPEC.md`; one agent that generate focused milestone test file; and one agent that aggregates the results from the other two and executes the corresponding tests. Then explain the state changes, invariant preserved,
+and any assumptions made.
