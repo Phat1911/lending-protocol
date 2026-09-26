@@ -17,6 +17,9 @@ docs/
 .env.*
 !.env.example
 
+# Local live-test evidence (keep locally; do not track future edits)
+/deployments/exploration-sepolia-lifecycle-results.md
+
 # Personal working notes, not part of the public-facing docs
 NOTE.md
 note1.md
