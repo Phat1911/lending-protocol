@@ -238,3 +238,205 @@ After each milestone: `forge build` then `forge test -vv` (or `-vvvv` when
 debugging a specific failing case) scoped to that milestone's new test file.
 After milestone 10, run the full suite (`forge test`) and confirm coverage
 against SPEC.md §11 line by line.
+
+---
+
+# L1/L2 Exploration Milestones
+
+This section implements `L1_L2_EXPLORATION_SPEC.md`. The original milestones
+above describe the lending protocol itself and remain unchanged. These new
+milestones start with the smallest useful exploration increment: a local,
+non-secret measurement skeleton that can be validated before spending testnet
+funds.
+
+## 11. Exploration scaffold, configuration, and measurement schema
+**Label:** supporting/boilerplate — quick review
+
+- Add the exploration area described in the L1/L2 specification, with a
+  network registry for Sepolia, Arbitrum Sepolia, and Base Sepolia.
+- Add environment-variable validation for RPC URLs and the dedicated testnet
+  private key; fail clearly when required values are missing.
+- Define the machine-readable transaction/deployment record schema: network,
+  chain ID, scenario, run, hash, block, on-chain timestamp, wall-clock
+  timestamps, status, gas, fee fields, explorer URL, and error notes.
+- Add a dry-run or local validation path that checks configuration and writes a
+  sample record without broadcasting a transaction.
+- Do not add any deadline probe or modify production contracts.
+
+**Done when:** the scaffold validates locally, refuses missing secrets, emits a
+schema-valid sample record, and no private key or RPC credential is written to
+the repository.
+
+## 12. Fresh deployment harness on Sepolia
+**Label:** supporting/boilerplate — quick review
+
+- Reuse the existing four contracts and deployment constructor arguments.
+- Add a harness command that deploys fresh copies to Sepolia and records each
+  address, deployment transaction hash, receipt data, block number, block
+  timestamp, gas, fee, and explorer URL.
+- Record the deployer/owner address publicly, but never record the private key.
+- Make the output suitable for later reuse by interaction scripts.
+
+**Done when:** all four contracts deploy successfully on Sepolia, the recorded
+metadata can be used to reconnect to them, and the existing local build/tests
+still pass.
+
+## 13. Sepolia baseline lifecycle and invariant checks
+**Label:** core logic — deep checkpoint
+
+- Run the existing protocol through supply, collateral deposit, borrow, and repay using the deployed contracts.
+- Record every state-changing transaction with the standard schema.
+- Read balances, debt, indexes, reserves, health factor, and pool token balances before and after the lifecycle.
+- Confirm that the harness is observing the existing contract behavior rather
+  than recreating it in off-chain calculations.
+
+**Invariant/security property:** the lifecycle must preserve the protocol’s
+  accounting identity—pool DAI balance must match tracked supplied liquidity
+  minus borrowed liquidity plus tracked reserves, subject to the contract’s
+  documented token-flow semantics. Repayment must not increase a user’s debt,
+  and no successful transaction may silently change owner/oracle authority.
+
+**Done when:** one complete Sepolia lifecycle is reproducible from recorded
+  addresses and all post-transaction accounting assertions pass.
+
+## 14. Real-time timestamp and interest-accrual experiment
+**Label:** core logic — deep checkpoint
+
+- Establish a borrower position on Sepolia.
+- Record `block.timestamp`, `block.number`, `lastAccrualTimestamp`,
+  `borrowIndex`, and live debt.
+- Wait using real wall-clock time; do not use `vm.warp` in the live script.
+- Trigger accrual through `repay()` or another existing state-changing entry
+  point, then record the same values again.
+- Run the ordinary interaction three times where practical and report elapsed wall-clock time versus on-chain timestamp delta.
+
+**Invariant/security property:** interest must be applied once to the elapsed
+  timestamp interval when the next accrual-triggering call occurs. The
+  `borrowIndex` and `lastAccrualTimestamp` must not decrease, and a read-only
+  observation must not mutate state. The write-up must distinguish delayed
+  state update from continuous off-chain time passage.
+
+**Done when:** the measured result demonstrates whether and how the deployed
+  contract’s debt/index changes after real elapsed time, with transaction
+  hashes and before/after state evidence.
+
+## 15. Oracle-price and liquidation experiment
+**Label:** core logic — deep checkpoint
+
+- Set up a funded supplier, borrower, collateral position, and liquidator
+  using the existing mock tokens and owner-controlled mock oracle.
+- Record the healthy position and oracle prices.
+- Change the oracle price, record the transaction, then observe health factor
+  and liquidation behavior.
+- Execute a successful liquidation where possible and record debt, collateral,
+  bonus, reserves, and token balances before and after.
+- Label the owner-controlled oracle as a trust assumption in every result.
+
+**Invariant/security property:** a healthy position must not be liquidated; an
+  unhealthy position may be liquidated according to the existing contract’s
+  current-price and debt/accounting rules; liquidation must not seize more
+  collateral than the borrower owns or leave accounting inconsistent. The
+  experiment must not imply that the mock oracle models a production feed.
+
+**Done when:** the price-change and liquidation path is evidenced by on-chain
+  transactions and the result is categorized as protocol behavior plus trust
+  boundary, not as an unqualified oracle-manipulation finding.
+
+## 16. Rapid-transaction and delayed-interaction observations
+**Label:** core logic — deep checkpoint
+
+- Submit several compatible transactions close together on Sepolia and record
+  their block numbers, timestamps, receipts, and ordering.
+- Run one deliberately delayed interaction after the borrower has accrued debt.
+- Compare transaction submission order with inclusion order and compare wall
+  clock delay with on-chain timestamp delta.
+- Document any RPC retries, pending periods, replacement transactions, or
+  failed calls rather than hiding them.
+
+**Invariant/security property:** transaction ordering must be reported from
+  canonical receipts, not assumed from local submission order. Delayed
+  interaction must not cause the analysis to double-count elapsed time or call
+  a receipt equivalent to finality. Any conclusion about timestamp safety must
+  remain bounded by the observed testnet evidence.
+
+**Done when:** the data shows how close submissions and delayed calls appeared
+  in actual blocks and the write-up clearly separates receipt speed from
+  settlement/finality.
+
+## 17. Replicate the deployment and scenario harness on Arbitrum Sepolia
+**Label:** supporting/boilerplate — quick review
+
+- Deploy fresh copies of the same four contracts to Arbitrum Sepolia.
+- Reuse the same scenario inputs and recorder used on Sepolia.
+- Confirm chain ID, addresses, owner, oracle, token wiring, and explorer links.
+- Run at least one complete scenario and three ordinary repeats where
+  practical; record blocked or unavailable operations explicitly.
+
+**Done when:** Arbitrum Sepolia has traceable deployment metadata and enough
+  records to compare the same contract calls with Sepolia.
+
+## 18. Replicate the deployment and scenario harness on Base Sepolia
+**Label:** supporting/boilerplate — quick review
+
+- Deploy fresh copies of the same four contracts to Base Sepolia.
+- Reuse the same scenario inputs, recorder, and assertions.
+- Confirm chain ID, addresses, owner, oracle, token wiring, and explorer links.
+- Run at least one complete scenario and three ordinary repeats where
+  practical; record blocked or unavailable operations explicitly.
+
+**Done when:** Base Sepolia has traceable deployment metadata and enough
+  records to compare the same contract calls with both Sepolia and Arbitrum
+  Sepolia.
+
+## 19. Cross-network fee, timing, and block-behavior analysis
+**Label:** core logic — deep checkpoint
+
+- Aggregate raw records by network, scenario, and run.
+- Report `gasUsed`, `effectiveGasPrice`, total fee, and exposed L2 fee
+  components separately.
+- Report receipt latency using median and observed range for three-run groups.
+- Compare block-number and timestamp progression without assuming that an L2
+  block number has the same meaning or cadence as an L1 block number.
+- Add settlement/finality observations only when a reliable network-specific source exists; otherwise document the limitation.
+
+**Invariant/security property:** every summary row must be traceable to a
+  transaction hash and must not conflate gas used with total fee, receipt with
+  finality, or one network’s block-number semantics with another’s. Missing or
+  failed observations must remain visible in the dataset.
+
+**Done when:** a reviewer can reproduce each headline number from raw records,
+  and the comparison makes no unsupported universal claim from the sample.
+
+## 20. Security interpretation and sequencer threat-model note
+**Label:** core logic — deep checkpoint
+
+- Apply the specification’s four-part pattern to each result: observation, assumption, risk question, and bounded conclusion.
+- Analyze timestamp-based accrual, delayed repayment/liquidation, oracle freshness/trust, transaction ordering, sequencer delay/censorship, and the receipt-versus-finality distinction.
+- Explicitly state that a public testnet run does not reproduce a sequencer
+  outage unless a safe reproducible method was actually used.
+- Separate findings about this LendingPool from general L2 operational risks.
+
+**Invariant/security property:** the final security claims must preserve the
+  trust model and evidence boundary: owner-controlled mock-oracle behavior is
+  a stated assumption, not silently treated as permissionless oracle failure;
+  observed latency is not presented as a protocol guarantee; and no conclusion
+  claims more than the recorded transactions establish.
+
+**Done when:** each major security statement has supporting transaction/data
+  references or is explicitly labeled as a threat-model question or limitation.
+
+## 21. Portfolio artifact and final verification
+**Label:** supporting/boilerplate — quick review
+
+- Write the 1,200–1,800 word recruiter-facing case study.
+- Include the experiment question, networks, method, compact results table,
+  timestamp/block observations, gas/fee comparison, latency statistics,
+  receipt-versus-settlement/finality distinction, security observations,
+  trust assumptions, limitations, and reproduction links.
+- Add or update exploration README instructions for a fresh user.
+- Confirm no secrets are tracked, raw data is present, and existing Foundry tests still pass.
+- Record unavailable networks, failed runs, skipped repeats, and measurement limitations honestly.
+
+**Done when:** the repository and write-up satisfy every acceptance criterion in
+  `L1_L2_EXPLORATION_SPEC.md` and a recruiter can understand the result without
+  mistaking it for a production audit or a universal L1/L2 performance claim.
