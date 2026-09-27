@@ -320,6 +320,16 @@ still pass.
   contract’s debt/index changes after real elapsed time, with transaction
   hashes and before/after state evidence.
 
+**Observed completion (Sepolia, 2026-09-27):** three sequential 60-second
+wall-clock waits produced on-chain timestamp deltas of 84, 84, and 96 seconds.
+All three successful `repay(0)` triggers increased both `borrowIndex` and
+principal debt. The corresponding trigger hashes are
+`0x77bbfcd2f36d65f66b9849d08834c50815162493b2c4bc4fc8b6ad2415ec6e3c`,
+`0x36b5ac740d2947bf35754349df8d1cb6587d9cfd2b3eb4cd4f7716207af06cda`, and
+`0x0ff4e9ca0bbc79ca5455b9aafddf63a9541a024aafb65d201c6c90f5eecd3da6`.
+Full machine-readable evidence is stored locally in
+`deployments/exploration-sepolia-timestamp-results.json`.
+
 ## 15. Oracle-price and liquidation experiment
 **Label:** core logic — deep checkpoint
 

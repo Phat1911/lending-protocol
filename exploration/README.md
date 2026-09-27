@@ -67,3 +67,39 @@ It asserts that the final principal debt and total borrowed amount are zero and
 that the observed pool DAI balance equals:
 
 `totalDaiSupplied - totalDaiBorrowed + totalReserves`.
+
+## Milestone 14: real-time timestamp and interest accrual
+
+This experiment creates a new borrower position, records the on-chain state,
+waits in the PowerShell process, and then calls `repay(0)`. In this protocol,
+`repay(0)` is useful as an observation trigger: it executes `_accrueInterest()`
+and debt settlement but transfers zero mDAI. The wait itself cannot mutate the
+contract; the later transaction is what applies the elapsed `block.timestamp`
+interval.
+
+Run three 60-second observations:
+
+```powershell
+$env:DEPLOYER_PRIVATE_KEY = '<testnet-only-private-key>'
+powershell -ExecutionPolicy Bypass -File exploration/scripts/run-sepolia-timestamp-experiment.ps1
+Remove-Item Env:DEPLOYER_PRIVATE_KEY
+```
+
+The setup phase contains several transactions. The wrapper therefore uses a
+1,000,000 gas limit by default; override it with `-GasLimit` if an RPC/provider
+requires a different ceiling.
+
+If setup partially succeeded, use `-SkipSetup` after confirming that the actor
+already has collateral and debt. This waits and triggers accrual without
+creating another position:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File exploration/scripts/run-sepolia-timestamp-experiment.ps1 -SkipSetup -Runs 1
+```
+
+For a quick smoke run, use `-Runs 1 -WaitSeconds 10`. The JSON output records
+before/after block timestamps, block numbers, `lastAccrualTimestamp`,
+`borrowIndex`, principal/live debt, every setup/trigger receipt, gas, fees, and
+explorer links. This measures receipt-triggered accrual behavior; it is not a
+claim that interest is continuously written to storage while nobody calls the
+pool.
