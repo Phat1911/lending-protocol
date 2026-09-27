@@ -131,3 +131,26 @@ mDAI. It then changes the mock WETH price from the deployment value of
 already has a suitable debt/collateral position. The JSON output records
 prices, health factors, balances, reserves, receipts, gas, fees, and explorer
 links before and after liquidation.
+
+## Milestone 16: rapid transactions and delayed interaction
+
+This runner submits several separate `repay(0)` transactions asynchronously,
+polls their canonical receipts, and records both local submission order and
+receipt block/transaction order. It then waits before sending one more
+`repay(0)` interaction. The wait does not mutate state; the later transaction
+is what applies interest accrual using the block timestamp.
+
+Run it with the current borrower wallet:
+
+```powershell
+powershell -ExecutionPolicy Bypass `
+  -File .\exploration\scripts\run-sepolia-ordering-delay-experiment.ps1
+```
+
+The default creates a borrower position, submits three burst transactions,
+waits 60 seconds, and submits one delayed interaction. If a suitable debt
+position already exists, use `-SkipSetup` to avoid adding another position.
+Use `-BurstCount 3 -DelaySeconds 10` for a shorter smoke run. Evidence is
+written to `deployments/exploration-sepolia-ordering-delay-results.json`.
+The output deliberately calls receipt latency a receipt measurement only; it
+does not treat a receipt as settlement or finality.

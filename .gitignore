@@ -21,6 +21,7 @@ docs/
 /deployments/exploration-sepolia-lifecycle-results.md
 /deployments/exploration-sepolia-timestamp-results.json
 /deployments/exploration-sepolia-oracle-liquidation-results.json
+/deployments/exploration-sepolia-ordering-delay-results.json
 
 # Personal working notes, not part of the public-facing docs
 NOTE.md

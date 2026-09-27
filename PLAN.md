@@ -395,6 +395,32 @@ the run demonstrates mechanics rather than independent-liquidator incentives.
   in actual blocks and the write-up clearly separates receipt speed from
   settlement/finality.
 
+**Implementation status:** the Sepolia recorder is implemented in
+`run-sepolia-ordering-delay-experiment.ps1`. Milestone 16 remains open until
+its burst and delayed-interaction run produces on-chain evidence.
+
+**Observed completion (Sepolia, 2026-09-27):** three `repay(0)` transactions
+were submitted close together and all landed in block `11790752`, with
+canonical transaction indices `104`, `118`, and `125`. Submission order and
+canonical order matched. Receipt latencies were `26.242`, `26.467`, and
+`24.860` seconds; gas used was `98,331`, `54,079`, and `54,079` respectively.
+After a 60-second requested delay, the delayed interaction landed in block
+`11790759`, transaction index `119`, with a `5.784` second receipt latency and
+`98,331` gas used. The observed block timestamp moved from `1790480988`
+after the burst to `1790481072` after the delayed call: an 84-second on-chain
+delta. `borrowIndex` and debt increased only when the state-changing calls
+were included; the wall-clock wait itself did not mutate storage.
+
+The first attempt exposed an RPC/nonce issue: after burst-1 was accepted,
+burst-2 initially returned `already known` because the asynchronous sender
+reused a nonce. The runner was changed to reserve explicit sequential pending
+nonces, and the rerun completed successfully. Full evidence is in the local
+ignored file `deployments/exploration-sepolia-ordering-delay-results.json`.
+
+These are receipt observations, not finality measurements. The evidence does
+not establish a universal Sepolia latency guarantee or prove settlement at
+receipt time.
+
 ## 17. Replicate the deployment and scenario harness on Arbitrum Sepolia
 **Label:** supporting/boilerplate — quick review
 
