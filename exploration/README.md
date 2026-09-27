@@ -154,3 +154,29 @@ Use `-BurstCount 3 -DelaySeconds 10` for a shorter smoke run. Evidence is
 written to `deployments/exploration-sepolia-ordering-delay-results.json`.
 The output deliberately calls receipt latency a receipt measurement only; it
 does not treat a receipt as settlement or finality.
+
+## Milestone 17: Arbitrum Sepolia replication
+
+Set `ARBITRUM_SEPOLIA_RPC_URL` and use a funded testnet-only wallet. The
+deployment wrapper uses the same `ExplorationDeploy` script and writes fresh
+Arbitrum addresses to a separate metadata file:
+
+```powershell
+$env:DEPLOYER_PRIVATE_KEY = '<testnet-only-private-key>'
+powershell -ExecutionPolicy Bypass `
+  -File .\exploration\scripts\deploy-arbitrum-sepolia.ps1
+```
+
+Run the complete lifecycle three times by default:
+
+```powershell
+powershell -ExecutionPolicy Bypass `
+  -File .\exploration\scripts\run-arbitrum-sepolia-lifecycle.ps1
+```
+
+Use `-Runs 1` for a smoke test. Deployment metadata is written to
+`deployments/exploration-arbitrum-sepolia.json`; lifecycle evidence is written
+to the ignored local JSON result file. The recorder confirms chain ID,
+contract wiring, owner, oracle, debt clearing, and the accounting identity.
+It records gas used and effective gas price separately and currently leaves
+provider-specific L2 fee components null rather than inventing them.

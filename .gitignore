@@ -22,6 +22,7 @@ docs/
 /deployments/exploration-sepolia-timestamp-results.json
 /deployments/exploration-sepolia-oracle-liquidation-results.json
 /deployments/exploration-sepolia-ordering-delay-results.json
+/deployments/exploration-arbitrum-sepolia-lifecycle-results.json
 
 # Personal working notes, not part of the public-facing docs
 NOTE.md

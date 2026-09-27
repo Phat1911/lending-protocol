@@ -433,6 +433,33 @@ receipt time.
 **Done when:** Arbitrum Sepolia has traceable deployment metadata and enough
   records to compare the same contract calls with Sepolia.
 
+**Implementation status:** Arbitrum Sepolia deployment and lifecycle wrappers
+are implemented in `deploy-arbitrum-sepolia.ps1` and
+`run-arbitrum-sepolia-lifecycle.ps1`. The milestone remains open until the
+deployment and at least one lifecycle run produce on-chain evidence.
+
+**Observed completion (Arbitrum Sepolia, 2026-09-27):** deployment succeeded
+on chain ID `421614`, with owner and oracle ownership both matching
+`0xfAD141De27202beCCf7C1C1b86790c348Ea96Aef`; the pool token and oracle
+wiring checks also passed. The deployed LendingPool is
+`0x3deebad46d8e3020b8715efa182398b396531eed` and the deployment metadata is
+in `deployments/exploration-arbitrum-sepolia.json`.
+
+Three complete lifecycle runs succeeded. Each run ended with zero principal
+debt, zero total borrowed debt, and a true pool accounting identity. The
+recorder captured nine successful receipts per run, including gas used,
+effective gas price, total fee, block number, block timestamp, and Arbiscan
+link. Example run 1 gas usage ranged from `47,910` to `144,771`; deployment
+gas ranged from `402,770` to `3,627,317` across the four contracts.
+
+Because the same actor was reused, each successful repeat intentionally left
+its collateral and supplied mDAI in the pool after repayment; the runs are
+repeatable lifecycle observations, not isolated fresh-wallet trials. The
+first recorder leaves provider-specific L2 fee components null and reports
+gas used/effective gas price separately. Receipt success is not treated as
+settlement or finality. Full evidence is in the local ignored file
+`deployments/exploration-arbitrum-sepolia-lifecycle-results.json`.
+
 ## 18. Replicate the deployment and scenario harness on Base Sepolia
 **Label:** supporting/boilerplate — quick review
 
