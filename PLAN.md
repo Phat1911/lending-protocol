@@ -352,6 +352,28 @@ Full machine-readable evidence is stored locally in
   transactions and the result is categorized as protocol behavior plus trust
   boundary, not as an unqualified oracle-manipulation finding.
 
+**Implementation status:** the role-separated Sepolia harness is implemented
+in `ExplorationOracleLiquidation.s.sol` and
+`run-sepolia-oracle-liquidation.ps1`. Milestone 15 remains open until its
+on-chain run produces the evidence described above.
+
+**Observed completion (Sepolia, 2026-09-27):** a fresh deployment used the
+same wallet as borrower, oracle owner, and liquidator. At WETH price `2000e18`,
+the position had `1e18` collateral, `500e18` debt, and health factor `3.2e18`.
+The owner then changed the mock WETH price to `500e18` in transaction
+`0x0aa935b384e876c976b430c3034f012844c5c2fd0dc278f1db05afe6d6901aaf`;
+the observed health factor became `0.8e18`. Liquidation succeeded in
+transaction `0x30fc62d02c682de8d325ec07042bf94d928bec38a86f2f92f959b501e2a3455a`,
+leaving zero debt, zero collateral, zero total borrowed, and a protocol
+reserve balance of `4280821917800` wei. The liquidation used `165158` gas.
+The price change used `29591` gas. Full evidence is in the local ignored file
+`deployments/exploration-sepolia-oracle-liquidation-results.json`.
+
+This demonstrates the existing current-price liquidation behavior and the
+mock oracle's trust boundary; it is not evidence that a production oracle can
+be manipulated in the same way. Because all three roles were the same wallet,
+the run demonstrates mechanics rather than independent-liquidator incentives.
+
 ## 16. Rapid-transaction and delayed-interaction observations
 **Label:** core logic — deep checkpoint
 

@@ -103,3 +103,31 @@ before/after block timestamps, block numbers, `lastAccrualTimestamp`,
 explorer links. This measures receipt-triggered accrual behavior; it is not a
 claim that interest is continuously written to storage while nobody calls the
 pool.
+
+## Milestone 15: oracle price and liquidation behavior
+
+This experiment uses three roles: the borrower, the owner of the mock oracle,
+and the liquidator. It records a healthy position, changes the mock WETH
+price, records the resulting health factor, and executes the existing
+`liquidate` path. The oracle owner is an explicit trust assumption: this is
+not evidence that a production oracle can be manipulated in the same way.
+
+By default all roles fall back to `DEPLOYER_PRIVATE_KEY`, which is convenient
+for one testnet wallet only if that wallet owns the deployed oracle. For
+separate roles, set `ORACLE_OWNER_PRIVATE_KEY` and
+`LIQUIDATOR_PRIVATE_KEY` as process-level variables. Never commit them.
+
+```powershell
+$env:DEPLOYER_PRIVATE_KEY = '<borrower-testnet-private-key>'
+$env:ORACLE_OWNER_PRIVATE_KEY = '<deployment-owner-private-key>'
+$env:LIQUIDATOR_PRIVATE_KEY = '<liquidator-testnet-private-key>'
+powershell -ExecutionPolicy Bypass -File exploration/scripts/run-sepolia-oracle-liquidation.ps1
+Remove-Item Env:DEPLOYER_PRIVATE_KEY, Env:ORACLE_OWNER_PRIVATE_KEY, Env:LIQUIDATOR_PRIVATE_KEY
+```
+
+The default setup supplies 1,000 mDAI, deposits 1 mWETH, and borrows 500
+mDAI. It then changes the mock WETH price from the deployment value of
+2,000e18 to 500e18. Use `-SkipSetup` only after confirming that the borrower
+already has a suitable debt/collateral position. The JSON output records
+prices, health factors, balances, reserves, receipts, gas, fees, and explorer
+links before and after liquidation.
