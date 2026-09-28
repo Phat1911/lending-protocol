@@ -180,3 +180,34 @@ to the ignored local JSON result file. The recorder confirms chain ID,
 contract wiring, owner, oracle, debt clearing, and the accounting identity.
 It records gas used and effective gas price separately and currently leaves
 provider-specific L2 fee components null rather than inventing them.
+
+## Milestone 18: Base Sepolia replication
+
+Set `BASE_SEPOLIA_RPC_URL` and fund the same dedicated testnet-only wallet on
+Base Sepolia. The wrapper reuses the existing four-contract deployment script
+and writes separate Base metadata:
+
+```powershell
+$env:DEPLOYER_PRIVATE_KEY = '<testnet-only-private-key>'
+powershell -ExecutionPolicy Bypass `
+  -File .\exploration\scripts\deploy-base-sepolia.ps1
+```
+
+Run the lifecycle three times by default:
+
+```powershell
+powershell -ExecutionPolicy Bypass `
+  -File .\exploration\scripts\run-base-sepolia-lifecycle.ps1
+```
+
+Use `-Runs 1` for a smoke test. Deployment metadata is written to
+`deployments/exploration-base-sepolia.json`; lifecycle evidence is written to
+the ignored local JSON result file. The recorder confirms chain ID, contract
+wiring, owner, oracle, debt clearing, and the accounting identity. It records
+gas used and effective gas price separately and leaves provider-specific L2
+fee components null until a reliable fee decomposition is added.
+
+The Base wrapper submits every lifecycle action as a separate transaction.
+This preserves the observed evidence while avoiding the
+`ReentrancySentryOOG` failures observed when Forge batches state-changing
+calls in one script execution.

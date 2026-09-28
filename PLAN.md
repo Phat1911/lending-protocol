@@ -473,6 +473,27 @@ settlement or finality. Full evidence is in the local ignored file
   records to compare the same contract calls with both Sepolia and Arbitrum
   Sepolia.
 
+**Implementation status:** Base Sepolia deployment and lifecycle wrappers are
+implemented in `deploy-base-sepolia.ps1` and
+`run-base-sepolia-lifecycle.ps1`. They reuse the existing Solidity harness,
+use chain ID `84532`, write separate Base metadata/evidence paths, validate
+owner/token/oracle wiring, and preserve the same accounting and debt-cleared
+assertions as the Arbitrum recorder. The milestone remains open until Base
+deployment and at least one lifecycle run produce on-chain evidence.
+
+**Observed completion (Base Sepolia, 2026-09-28):** deployment metadata was
+written to `deployments/exploration-base-sepolia.json`, and three lifecycle
+runs completed with nine successful receipts per run. The runs covered blocks
+`47409275`–`47409292`, `47409294`–`47409310`, and `47409313`–`47409332`; their
+timestamp ranges were `1790586836`–`1790586870`, `1790586874`–`1790586906`,
+and `1790586912`–`1790586950`. Each run ended with principal debt `0` and a
+true accounting identity. `totalDaiBorrowed` retained a `3 wei` residual in
+each run, an observable rounding effect of the existing interest/accounting
+logic rather than an off-chain adjustment. The Base wrapper submits each
+state-changing action separately because Forge-batched execution repeatedly
+produced `ReentrancySentryOOG` on this network. Full local evidence is in the
+ignored file `deployments/exploration-base-sepolia-lifecycle-results.json`.
+
 ## 19. Cross-network fee, timing, and block-behavior analysis
 **Label:** core logic — deep checkpoint
 
