@@ -494,6 +494,27 @@ state-changing action separately because Forge-batched execution repeatedly
 produced `ReentrancySentryOOG` on this network. Full local evidence is in the
 ignored file `deployments/exploration-base-sepolia-lifecycle-results.json`.
 
+**Implementation status:** the cross-network analyzer is implemented in
+`exploration/scripts/analyze-cross-network.ps1`. It consumes the local raw
+JSON evidence, preserves transaction hashes and explorer URLs, and writes
+`deployments/exploration-cross-network-analysis.json` plus the compact
+Markdown table `deployments/exploration-cross-network-analysis.md`. The
+summary keeps gas, effective gas price, total fee, and L2 fee components
+separate; computes receipt latency only where timestamps exist; and records
+missing evidence and finality limitations explicitly.
+
+**Observed completion (local aggregation, 2026-09-28):** the report includes
+the three tracked deployment metadata files and the available local Sepolia,
+Arbitrum Sepolia, and Base Sepolia experiment records. The raw Arbitrum/Base
+lifecycle records expose no provider-specific L2 fee decomposition, so the
+report marks those components as missing rather than estimating them. The
+receipt-latency sample is available for the Sepolia ordering experiment; the
+lifecycle recorders do not contain submission timestamps, so their latency is
+left unavailable. The known failed initial Sepolia repayment is retained as a
+failed observation from the Markdown lifecycle record rather than being
+silently omitted. No settlement/finality source was captured, and the report
+does not infer finality from receipt success.
+
 ## 19. Cross-network fee, timing, and block-behavior analysis
 **Label:** core logic — deep checkpoint
 

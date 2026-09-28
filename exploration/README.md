@@ -211,3 +211,22 @@ The Base wrapper submits every lifecycle action as a separate transaction.
 This preserves the observed evidence while avoiding the
 `ReentrancySentryOOG` failures observed when Forge batches state-changing
 calls in one script execution.
+
+## Milestone 19: cross-network fee, timing, and block behavior
+
+After the local evidence files for the completed experiments are present, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass `
+  -File .\exploration\scripts\analyze-cross-network.ps1
+```
+
+The analyzer aggregates deployment, lifecycle, timestamp, liquidation, and
+ordering records without reading `.env` or requiring a private key. It writes
+the detailed, hash-traceable JSON report to
+`deployments/exploration-cross-network-analysis.json` and a reviewer-friendly
+table to `deployments/exploration-cross-network-analysis.md`. The reports
+separate gas used, effective gas price, total fee, and L2 fee components. They
+calculate receipt-latency median/range only where the evidence contains
+submission and receipt timing, and explicitly list missing evidence and
+provider-specific fee limitations.
