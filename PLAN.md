@@ -552,6 +552,19 @@ does not infer finality from receipt success.
 **Done when:** each major security statement has supporting transaction/data
   references or is explicitly labeled as a threat-model question or limitation.
 
+**Implementation status:** the bounded interpretation is implemented in
+`L1_L2_SECURITY_NOTE.md`. It applies the four-part pattern to timestamp
+accrual, delayed repayment/liquidation, oracle trust, ordering, sequencer
+operations, and receipt-versus-finality. It separates protocol observations
+from L2 operational questions and preserves the evidence boundary around the
+owner-controlled mock oracle.
+
+**Observed completion (2026-09-28):** the note references the recorded
+transaction hashes and measured ranges, states that receipt speed is not
+settlement/finality, and explicitly says that no sequencer outage was
+reproduced. It makes no production-oracle, censorship-resistance, outage, or
+finality claim beyond the available testnet evidence.
+
 ## 21. Portfolio artifact and final verification
 **Label:** supporting/boilerplate — quick review
 

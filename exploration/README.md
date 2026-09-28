@@ -230,3 +230,12 @@ separate gas used, effective gas price, total fee, and L2 fee components. They
 calculate receipt-latency median/range only where the evidence contains
 submission and receipt timing, and explicitly list missing evidence and
 provider-specific fee limitations.
+
+## Milestone 20: security interpretation and sequencer threat model
+
+Read the bounded security interpretation in
+[`L1_L2_SECURITY_NOTE.md`](../L1_L2_SECURITY_NOTE.md). It applies the
+observation/assumption/risk-question/conclusion pattern to timestamp accrual,
+delayed interactions, oracle trust, ordering, sequencer operations, and
+receipt-versus-finality. It deliberately records that the public testnet runs
+did not reproduce a sequencer outage.
