@@ -580,3 +580,16 @@ finality claim beyond the available testnet evidence.
 **Done when:** the repository and write-up satisfy every acceptance criterion in
   `L1_L2_EXPLORATION_SPEC.md` and a recruiter can understand the result without
   mistaking it for a production audit or a universal L1/L2 performance claim.
+
+**Implementation status:** the recruiter-facing case study is implemented in
+`L1_L2_EXPLORATION_CASE_STUDY.md`. It includes the experiment question,
+networks, method, compact fee/timing results, timestamp and block observations,
+receipt-versus-settlement/finality distinction, security interpretation, trust
+assumptions, limitations, failed runs, and reproduction links. The exploration
+README now contains the final artifact and secret-handling instructions.
+
+**Observed completion (2026-09-28):** the case study is based on the recorded
+Sepolia, Arbitrum Sepolia, and Base Sepolia evidence rather than synthetic
+benchmarks. It explicitly preserves the missing L2 fee decomposition, the
+failed Sepolia repayment, the absence of a finality measurement, and the fact
+that no sequencer outage was reproduced.

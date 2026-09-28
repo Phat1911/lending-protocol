@@ -239,3 +239,22 @@ observation/assumption/risk-question/conclusion pattern to timestamp accrual,
 delayed interactions, oracle trust, ordering, sequencer operations, and
 receipt-versus-finality. It deliberately records that the public testnet runs
 did not reproduce a sequencer outage.
+
+## Milestone 21: portfolio artifact and final verification
+
+The recruiter-facing write-up is
+[`L1_L2_EXPLORATION_CASE_STUDY.md`](../L1_L2_EXPLORATION_CASE_STUDY.md). It
+links to the tracked deployment metadata, the generated cross-network report,
+and the security interpretation. It records the failed Sepolia repayment,
+missing L2 fee decomposition, unavailable finality measurement, and the
+sequencer-outage limitation.
+
+To regenerate the analysis data before reviewing the case study:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\exploration\scripts\analyze-cross-network.ps1
+```
+
+Keep `DEPLOYER_PRIVATE_KEY`, RPC URLs, and any other credentials in the local
+ignored environment only. The public artifacts should contain addresses,
+transaction hashes, contract metadata, and explorer links—but never secrets.
