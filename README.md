@@ -14,6 +14,8 @@ for the process, [SPEC.md](SPEC.md) for the full functional spec, and
 
 Two fixed assets: `mWETH` (collateral-only) and `mDAI` (borrow/supply, interest-bearing). Suppliers earn interest on `mDAI`, borrowers post `mWETH` collateral to borrow `mDAI` up to a loan-to-value limit, and undercollateralized positions can be liquidated at a bonus.
 
+> **Also deployed — unchanged — to Arbitrum Sepolia and Base Sepolia (L2s)** for a cross-network case study measuring gas, fees, receipt latency, and timestamp-based accrual: see [L1/L2 Exploration](#l1l2-exploration).
+
 ## Architecture
 
 ```
@@ -75,17 +77,44 @@ These are deliberate simplifications for a learning project, not oversights (SPE
 - **No flash loans.**
 - **Single-owner governance** — no DAO, no timelock, no multisig.
 - **Linear interest approximation**, not exact continuous compounding.
-- **Not deployed to mainnet** — Sepolia testnet only so far; no mainnet deployment has been made.
+- **Not deployed to mainnet** — public testnets only (Ethereum Sepolia, Arbitrum Sepolia, Base Sepolia); no mainnet deployment has been made or is intended.
 
-## Deployed Contract
+## Deployments
 
-- **Network:** Sepolia (chain id 11155111)
+All four Ethereum Sepolia contracts below are verified on Etherscan (source-exact match). The same, unchanged contracts were later deployed to Arbitrum Sepolia and Base Sepolia for the cross-network exploration — see [L1/L2 Exploration](#l1l2-exploration) below.
+
+### Ethereum Sepolia (chain id 11155111)
+
 - **LendingPool:** [`0xCAe679dBcDF79D370DFD3D4843294EF54c6E86bA`](https://sepolia.etherscan.io/address/0xCAe679dBcDF79D370DFD3D4843294EF54c6E86bA#code)
 - **MockPriceOracle:** [`0x21EaAC185835E2140De97e46Ac10613Dd4f6415A`](https://sepolia.etherscan.io/address/0x21EaAC185835E2140De97e46Ac10613Dd4f6415A#code)
 - **mWETH:** [`0x071A1C32c8e0AA04db784066CC4a8e118104E968`](https://sepolia.etherscan.io/address/0x071A1C32c8e0AA04db784066CC4a8e118104E968#code)
 - **mDAI:** [`0x4D6aF44f46e929926a569a474aA95C06056e7C1e`](https://sepolia.etherscan.io/address/0x4D6aF44f46e929926a569a474aA95C06056e7C1e#code)
 
-All 4 contracts verified on Etherscan (source-exact match). See [deployments/sepolia.json](deployments/sepolia.json) for full deployment metadata.
+Original deployment metadata: [deployments/sepolia.json](deployments/sepolia.json).
+
+### Arbitrum Sepolia (chain id 421614) & Base Sepolia (chain id 84532)
+
+Fresh deployments of the same unchanged contracts for the L1/L2 exploration. Addresses, transaction hashes, and explorer links are recorded in the exploration metadata:
+
+- [deployments/exploration-sepolia.json](deployments/exploration-sepolia.json)
+- [deployments/exploration-arbitrum-sepolia.json](deployments/exploration-arbitrum-sepolia.json)
+- [deployments/exploration-base-sepolia.json](deployments/exploration-base-sepolia.json)
+
+## L1/L2 Exploration
+
+The same, **unchanged** contracts were deployed and exercised on **Ethereum Sepolia (L1), Arbitrum Sepolia, and Base Sepolia (L2s)** — measuring deployment and full-lifecycle gas, fees, receipt latency, and block/timestamp progression, plus delayed-interaction interest accrual and oracle-price-driven liquidation. Every number in the write-ups traces back to a recorded transaction hash.
+
+Three artifacts, ordered spec → evidence → interpretation:
+
+1. **[L1_L2_EXPLORATION_SPEC.md](L1_L2_EXPLORATION_SPEC.md)** — the exploration specification: goals and non-goals, measurement protocol, timing vocabulary (receipt vs. settlement vs. finality), trust model, and acceptance criteria.
+2. **[L1_L2_EXPLORATION_CASE_STUDY.md](L1_L2_EXPLORATION_CASE_STUDY.md)** — the blog-style case study: method, results-at-a-glance table, what the protocol behavior taught (timestamp-based accrual, liquidation under a crashing oracle, ordering/nonce behavior), what the L2 runs taught, and explicit limitations.
+3. **[L1_L2_SECURITY_NOTE.md](L1_L2_SECURITY_NOTE.md)** — the bounded security interpretation: four-part evidence pattern (observation → assumption → risk question → conclusion) covering oracle freshness, delayed repayment, transaction ordering, sequencer delay/censorship as a threat-model question, and receipt-vs-settlement-vs-finality.
+
+Reproduce the cross-network summary from the raw evidence:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File exploration/scripts/analyze-cross-network.ps1
+```
 
 ## Development
 
