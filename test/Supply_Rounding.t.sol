@@ -65,7 +65,9 @@ contract SupplyRoundingTest is Test {
         weth.approve(address(pool), type(uint256).max);
         vm.stopPrank();
 
-        dai.mint(mallory, 1_000_000e18);
+        dai.mint(mallory, 2_000_000e18);
+        vm.prank(mallory);
+        dai.approve(address(pool), type(uint256).max);
     }
 
     /// @dev Triggers `_settleSupply` for `user` through the public path.
@@ -201,6 +203,45 @@ contract SupplyRoundingTest is Test {
         pool.withdrawSupply(1);
         assertEq(pool.suppliedBalance(alice), 0);
         assertEq(dai.balanceOf(alice), 1_000e18);
+    }
+
+    function test_FirstDepositorDonatesBeforeOthers_NothingInflates() public {
+        // The classic ERC4626 inflation setup, verbatim: the FIRST depositor
+        // supplies dust, then donates a large amount straight to the pool
+        // BEFORE anyone else deposits. In a share-price-derived design this
+        // deflates the next depositor's shares; here every accounting surface
+        // must stay untouched - and the donation ends up stranded.
+        vm.startPrank(mallory);
+        pool.supply(1);
+        dai.transfer(address(pool), 1_000_000e18);
+        vm.stopPrank();
+
+        // Victim deposits into the "inflated" pool.
+        vm.prank(alice);
+        pool.supply(1_000e18);
+
+        assertEq(pool.supplyIndex(), 1e18, "donation must not move the index");
+        assertEq(pool.totalDaiSupplied(), 1_000e18 + 1, "donation must not enter totals");
+        assertEq(pool.totalReserves(), 0, "donation must not become reserves");
+        assertEq(pool.suppliedBalance(alice), 1_000e18, "victim credited exactly - no deflation");
+        assertEq(pool.userSupplyIndex(alice), 1e18, "victim anchored at the untampered index");
+
+        // Attacker exits with exactly their principal - nothing more.
+        vm.prank(mallory);
+        pool.withdrawSupply(1);
+        assertEq(pool.suppliedBalance(mallory), 0);
+        assertEq(dai.balanceOf(mallory), 1_000_000e18, "attacker recovers only the dust; the donation is gone");
+
+        // Victim exits whole as well.
+        vm.prank(alice);
+        pool.withdrawSupply(1_000e18);
+        assertEq(pool.suppliedBalance(alice), 0);
+        assertEq(pool.totalDaiSupplied(), 0);
+
+        // The donation is stranded: it backs no claim (totalDaiSupplied == 0)
+        // and cannot be extracted even by the owner via withdrawReserves,
+        // which is capped at interest-grown totalReserves.
+        assertEq(dai.balanceOf(address(pool)), 1_000_000e18, "donation remains, unclaimable by anyone");
     }
 
     // ------------------------------------------------------------------

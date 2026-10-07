@@ -53,7 +53,7 @@ No asset registry: the two tokens are wired in at deploy time and nothing else i
 
 ## Security Considerations
 
-The test suite (227 tests across 32 files) is organized by vulnerability category as well as by feature, so each concern gets deliberate, isolated coverage rather than being incidentally caught by functional tests:
+The test suite (228 tests across 32 files) is organized by vulnerability category as well as by feature, so each concern gets deliberate, isolated coverage rather than being incidentally caught by functional tests:
 
 - **Reentrancy** — every function making an external token transfer (`deposit`/`withdraw`/`supply`/`borrow`/`repay`/`liquidate`/`withdrawReserves`) is checked for checks-effects-interactions ordering (internal state mutated before any transfer) and guarded with OpenZeppelin `ReentrancyGuard`. Tested with malicious ERC20 mocks that attempt to re-enter mid-transfer.
 - **Access control** — every risk-parameter setter, reserve withdrawal, and pause/unpause is `onlyOwner`; tested for both authorized success and unauthorized reverts on every single setter.
